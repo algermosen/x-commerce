@@ -5,6 +5,11 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
+![Static Badge](https://img.shields.io/badge/Node%20-%20v18.16.1%20-%20green)
+
+![Static Badge](https://img.shields.io/badge/pnpm%20-%20v7.22.0%20-%20rgb(252%2C%20154%2C%2051))
+
+
 ## Description
 
 [Nest](https://github.com/nestjs/nest) e-commerce api.
@@ -16,6 +21,8 @@ __Learnings__
 - Use of @BeforeInsert and @BeforeUpdate typeorm decorators
 - Add a simple logger to a service
 - CRUD methods within the Repository pattern on typeorm
+- Create relationships with typeorm
+- Save entities with its relationships
 
 ## Stack
 

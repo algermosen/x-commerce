@@ -2,9 +2,11 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  OneToMany,
   BeforeInsert,
   BeforeUpdate,
 } from 'typeorm';
+import { ProductImage } from './';
 
 @Entity()
 export class Product {
@@ -46,6 +48,18 @@ export class Product {
 
   @Column()
   gender: string;
+
+  @Column('text', {
+    array: true,
+    default: [],
+  })
+  tags: string[];
+
+  @OneToMany(() => ProductImage, (productImage) => productImage.product, {
+    cascade: true,
+    eager: true,
+  })
+  images?: ProductImage[];
 
   sanitizeSlug() {
     this.slug = this.slug

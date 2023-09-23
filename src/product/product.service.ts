@@ -9,9 +9,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Product } from './entities/product.entity';
+import { Product, ProductImage } from './entities';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { isUUID, uuid } from 'src/common/uuid';
+import { isUUID } from 'src/common/uuid';
 
 @Injectable()
 export class ProductService {
@@ -20,22 +20,38 @@ export class ProductService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+    @InjectRepository(ProductImage)
+    private readonly productImageRepository: Repository<ProductImage>,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
     try {
-      const product = this.productRepository.create(createProductDto);
-      return await this.productRepository.save(product);
+      const { images = [], ...productDetails } = createProductDto;
+      console.log({ images });
+      const product = this.productRepository.create({
+        ...productDetails,
+        images: images.map((image) =>
+          this.productImageRepository.create({ url: image }),
+        ),
+      });
+
+      await this.productRepository.save(product);
+      return product;
     } catch (error) {
       this.handleExceptions(error);
     }
   }
 
   async findAll({ skip, take = 5 }: PaginationDto) {
-    return await this.productRepository.find({
+    const products = await this.productRepository.find({
       skip,
       take,
     });
+
+    return products.map((product) => ({
+      ...product,
+      images: product.images.map((image) => image.url),
+    }));
   }
 
   async findOne(term: string) {
@@ -57,11 +73,17 @@ export class ProductService {
     return product;
   }
 
+  async findOneAndFlat(term: string) {
+    const { images, ...details } = await this.findOne(term);
+    return { details, images: images.map((image) => image.url) };
+  }
+
   async update(id: string, updateProductDto: UpdateProductDto) {
     try {
       const product = await this.productRepository.preload({
         id,
         ...updateProductDto,
+        images: [],
       });
 
       if (!product)
@@ -85,7 +107,10 @@ export class ProductService {
   private handleExceptions(error: any) {
     if (error.code === '23505') throw new BadRequestException(error.detail);
 
-    this.logger.error(error);
-    throw new InternalServerErrorException('Unexpected error, check logs');
+    throw new InternalServerErrorException(
+      `Unexpected error, check logs.${
+        error.code && ' Error code: [' + error.code + ']'
+      }`,
+    );
   }
 }
