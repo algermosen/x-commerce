@@ -13,6 +13,9 @@ __Learnings__
 
 - [pnpm](https://pnpm.io/) as a project package manager
 - Create PostgreSQL database using Docker
+- Use of @BeforeInsert and @BeforeUpdate typeorm decorators
+- Add a simple logger to a service
+- CRUD methods within the Repository pattern on typeorm
 
 ## Stack
 
