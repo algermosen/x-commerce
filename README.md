@@ -46,6 +46,18 @@ $ pnpm install
 docker-compose up -d
 ```
 
+4. Run project
+```bash
+yarn start:dev
+```
+
+5. Optional: Execute Seed
+```bash
+curl  -X POST \
+  'http://localhost:3000/api/v1/seed' \
+  --header 'Accept: */*'
+```
+
 ## Running the app
 
 ```bash
